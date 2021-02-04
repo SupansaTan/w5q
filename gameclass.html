@@ -26,9 +26,12 @@
             this.dy = -2;
         }      
 
-        draw() //วาดบอล
+        draw(count) //วาดบอล
         {
-            this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
+            if (count == 0){
+                this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
+            }
+            //this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
             this.ctx.beginPath();
             this.ctx.arc(this.posX ,this.posY,this.width,0,Math.PI*2);
             this.ctx.fillStyle = "orange";
@@ -207,7 +210,15 @@
         {
             this.canvas = document.getElementById("myCanvas");
             this.ctx = this.canvas.getContext("2d");
-            this.ball = new Ball(this.canvas.width/2, this.canvas.height-30, 10)
+            this.balls = [];
+            
+            for (var i=0; i<2; i++)
+            {
+                this.balls[i] = new Ball(this.canvas.width/2, this.canvas.height-30, 10);
+            }
+            
+            //this.ball = new Ball(this.canvas.width/2, this.canvas.height-30, 10)
+
             this.paddle = new Paddle((this.canvas.width-75)/2, 10, 75)
             this.brick = new Brick(3,5)
             this.inputProcessor = new InputProcessor()
@@ -218,10 +229,17 @@
 
         draw() 
         {
-            this.ball.draw();
+            for (var i=0; i<2; i++)
+            {
+                this.balls[i].draw(i);
+            }
             this.paddle.draw();
             this.brick.draw();
-            this.ball.move();
+            for (var i=0; i<2; i++)
+            {
+                this.balls[i].move();
+            }
+            //this.ball.move();
             this.collisionDetection();
             this.updateGame();
             requestAnimationFrame(()=>this.draw());
@@ -238,53 +256,57 @@
         collisionDetection()
         {
             //ตรวจสอบการชนของลูกบอล
-            if (this.ball.posY+this.ball.dy > this.canvas.height-this.ball.width)
+            for (var i=0; i<2; i++)
             {
-                // the ball bounce when hit the paddle 
-                if(this.paddle.hitPaddle(this.ball.posX))
+                //ตรวจสอบการชนของลูกบอล
+                if (this.balls[i].posY+this.balls[i].dy > this.canvas.height-this.balls[i].width)
                 {
-                    this.ball.dy = -this.ball.dy;
-                }
-                else
-                {
-                    this.lives -= 1;
-
-                    // game over
-                    if(!this.lives)
+                    // the ball bounce when hit the paddle 
+                    if(this.paddle.hitPaddle(this.balls[i].posX))
                     {
-                        window.location.reload();
-                        alert("Game Over")
+                        this.balls[i].dy = -this.balls[i].dy;
                     }
                     else
                     {
-                        // set position of the ball and the paddle at the start position
-                        this.ball.posX = this.canvas.width/2;
-                        this.ball.posY = this.canvas.height-30;
-                        this.ball.dy = -3;
-                        this.ball.dx = 3;
-                        this.paddle.posX = (this.canvas.width-this.paddle.width)/2;
+                        this.lives -= 1;
+
+                        // game over
+                        if(!this.lives)
+                        {
+                            window.location.reload();
+                            alert("Game Over")
+                        }
+                        else
+                        {
+                            // set position of the ball and the paddle at the start position
+                            this.balls[i].posX = this.canvas.width/2;
+                            this.balls[i].posY = this.canvas.height-30;
+                            this.balls[i].dy = -3;
+                            this.balls[i].dx = 3;
+                            this.paddle.posX = (this.canvas.width-this.paddle.width)/2;
+                        }
                     }
                 }
-            }
 
-            // when the ball hit the brick
-            if (this.brick.hitBrick(this.ball.posX, this.ball.posY))
-            {
-                this.ball.dy = -this.ball.dy;
-                this.score += 1;
-                this.winCheck();
-            }
+                // when the ball hit the brick
+                if (this.brick.hitBrick(this.balls[i].posX, this.balls[i].posY))
+                {
+                    this.balls[i].dy = -this.balls[i].dy;
+                    this.score += 1;
+                    this.winCheck();
+                }
 
-            // when the ball hit the left or right border of canvas
-            if (this.ball.posX + this.ball.dx > this.canvas.width-this.ball.width || this.ball.posX + this.ball.dx < this.ball.width)
-            {
-                this.ball.dx = -this.ball.dx;
-            }
+                // when the ball hit the left or right border of canvas
+                if (this.balls[i].posX + this.balls[i].dx > this.canvas.width-this.balls[i].width || this.balls[i].posX + this.balls[i].dx < this.balls[i].width)
+                {
+                    this.balls[i].dx = -this.balls[i].dx;
+                }
 
-            // when the ball hit the top border of canvas
-            if (this.ball.posY + this.ball.dy < this.ball.width) 
-            {
-                this.ball.dy = -this.ball.dy;
+                // when the ball hit the top border of canvas
+                if (this.balls[i].posY + this.balls[i].dy < this.balls[i].width) 
+                {
+                    this.balls[i].dy = -this.balls[i].dy;
+                }
             }
         }
 
