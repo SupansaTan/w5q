@@ -26,12 +26,8 @@
             this.dy = -2;
         }      
 
-        draw(count) //วาดบอล
+        draw() //วาดบอล
         {
-            if (count == 0){
-                this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
-            }
-            //this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
             this.ctx.beginPath();
             this.ctx.arc(this.posX ,this.posY,this.width,0,Math.PI*2);
             this.ctx.fillStyle = "orange";
@@ -217,8 +213,6 @@
                 this.balls[i] = new Ball(this.canvas.width/2, this.canvas.height-30, 10);
             }
             
-            //this.ball = new Ball(this.canvas.width/2, this.canvas.height-30, 10)
-
             this.paddle = new Paddle((this.canvas.width-75)/2, 10, 75)
             this.brick = new Brick(3,5)
             this.inputProcessor = new InputProcessor()
@@ -229,17 +223,19 @@
 
         draw() 
         {
+            this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
             for (var i=0; i<2; i++)
             {
-                this.balls[i].draw(i);
+                this.balls[i].draw();
             }
             this.paddle.draw();
             this.brick.draw();
+
             for (var i=0; i<2; i++)
             {
                 this.balls[i].move();
             }
-            //this.ball.move();
+            
             this.collisionDetection();
             this.updateGame();
             requestAnimationFrame(()=>this.draw());
